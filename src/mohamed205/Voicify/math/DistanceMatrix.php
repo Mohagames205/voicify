@@ -11,14 +11,14 @@ class DistanceMatrix
 
     private array $distances = [];
 
-    public function add(Player $player, int $distance)
+    public function add(string $player, int $distance)
     {
-        $this->distances[strtolower($player->getName())] = $distance;
+        $this->distances[strtolower($player)] = $distance;
     }
 
     public function getDistance(Player $player) : ?int
     {
-        return $this->distances[strtolower($player->getPlayer())] ?? null;
+        return $this->distances[strtolower($player)] ?? null;
     }
 
     public function toString(): string
@@ -31,7 +31,7 @@ class DistanceMatrix
         $arrayify = [];
         foreach ($this->distances as $player => $distance)
         {
-            $arrayify[strtolower($player->getName())] = $distance;
+            $arrayify[strtolower($player)] = $distance;
         }
         return json_encode($arrayify);
     }

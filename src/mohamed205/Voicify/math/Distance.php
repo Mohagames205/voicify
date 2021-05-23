@@ -9,11 +9,11 @@ use pocketmine\Player;
 class Distance
 {
 
-    private Player $primaryPlayer;
+    private string $primaryPlayer;
 
     private DistanceMatrix $distanceMatrix;
 
-    public function __construct(Player $primaryPlayer, DistanceMatrix $distanceMatrix)
+    public function __construct(string $primaryPlayer, DistanceMatrix $distanceMatrix)
     {
         $this->primaryPlayer = $primaryPlayer;
         $this->distanceMatrix = $distanceMatrix;
@@ -21,7 +21,7 @@ class Distance
 
     public function __toString()
     {
-        return json_encode([strtolower($this->primaryPlayer->getName()) => $this->distanceMatrix->toString()]);
+        return json_encode([strtolower($this->primaryPlayer) => $this->distanceMatrix->toString()]);
     }
 
 }
