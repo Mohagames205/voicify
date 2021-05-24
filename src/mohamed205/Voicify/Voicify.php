@@ -14,7 +14,7 @@ class Voicify extends PluginBase implements Listener {
     public function onEnable()
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        $this->getScheduler()->scheduleRepeatingTask(new SendPlayerDistanceTask(), 200);
+        $this->getScheduler()->scheduleRepeatingTask(new SendPlayerDistanceTask(), 40);
     }
 
 }
