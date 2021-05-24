@@ -38,7 +38,7 @@ class SendPlayerDistanceTask extends Task
                 }
                 public function onRun()
                 {
-                    Internet::postURL("localhost/api/distances", "coordinates=" . $this->distance);
+                    Internet::postURL("localhost/api/distances", "coordinates=" . $this->distance . "&roomId=mo");
                 }
             });
 

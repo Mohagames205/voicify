@@ -28,12 +28,7 @@ class DistanceMatrix
 
     public function __toString()
     {
-        $arrayify = [];
-        foreach ($this->distances as $player => $distance)
-        {
-            $arrayify[strtolower($player)] = $distance;
-        }
-        return json_encode($arrayify);
+        return json_encode($this->distances);
     }
 
 }
