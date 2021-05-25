@@ -27,8 +27,10 @@ class SendPlayerDistanceTask extends Task
                     $distanceMatrix->add($levelPlayer->getName(), $player->distance($levelPlayer));
                 }
             }
-            $distance[] = new Distance($player->getName(), $distanceMatrix);
+            $distances[strtolower($player->getName())] = $distanceMatrix->getDistances();
         }
+
+        $distances = json_encode($distances);
 
         Server::getInstance()->getAsyncPool()->submitTask(new class($distances) extends AsyncTask {
 

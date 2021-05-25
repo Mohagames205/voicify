@@ -16,9 +16,17 @@ class DistanceMatrix
         $this->distances[strtolower($player)] = $distance;
     }
 
-    public function getDistance(Player $player) : ?int
+    public function getDistance(string $player) : ?int
     {
         return $this->distances[strtolower($player)] ?? null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDistances(): array
+    {
+        return $this->distances;
     }
 
     public function toString(): string
