@@ -6,6 +6,7 @@ namespace mohamed205\Voicify\task;
 
 use mohamed205\Voicify\math\Distance;
 use mohamed205\Voicify\math\DistanceMatrix;
+use mohamed205\Voicify\Voicify;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
@@ -32,19 +33,7 @@ class SendPlayerDistanceTask extends Task
 
         $distances = json_encode($distances);
 
-        Server::getInstance()->getAsyncPool()->submitTask(new class($distances) extends AsyncTask {
-
-            private $distances;
-
-            public function __construct($distances)
-            {
-                $this->distances = $distances;
-            }
-            public function onRun()
-            {
-                Internet::postURL("https://voicify-web.herokuapp.com/api/distances", "coordinates=" . $this->distances . "&roomId=mo");
-            }
-        });
+        Voicify::getSocketThread()->sendData($distances);
     }
 
 }
