@@ -33,7 +33,7 @@ class SendPlayerDistanceTask extends Task
 
         $distances = json_encode($distances);
 
-        Voicify::getSocketThread()->sendData($distances);
+        Voicify::getSocketThread()->sendData("update-coordinates", $distances);
     }
 
 }
