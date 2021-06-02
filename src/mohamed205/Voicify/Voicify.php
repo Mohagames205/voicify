@@ -39,22 +39,24 @@ class Voicify extends PluginBase implements Listener
         $imgResource = SkinConverter::skinDataToImage($player->getSkin()->getSkinData());
         //$imgResource = imagecrop($imgResource, ['x' => 8, 'y' => 8, 'width' => 8, 'height' => 8]);
 
-        $headImage = imagecreatetruecolor(256, 256);
+        $base = 128;
+        $divider = 16;
+        $headImage = imagecreatetruecolor($base, $base);
 
         $x = 0;
         $headImageX = 0;
         $headImageY = 0;
-        while($x < 256) {
+        while($x < $base) {
             $y = 0;
-            while($y < 256) {
+            while($y < $base) {
                $color = imagecolorat($imgResource, $headImageX + 8, $headImageY + 8);
                imagesetpixel($headImage, $x, $y, $color);
-               if($y % 32 == 0 && $y !== 0) {
+               if($y % $divider == 0 && $y !== 0) {
                    $headImageY++;
                }
                $y++;
             }
-            if($x % 32 == 0 && $x !== 0) {
+            if($x % $divider == 0 && $x !== 0) {
                 $headImageX++;
             }
             $x++;

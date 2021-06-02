@@ -14,12 +14,12 @@ class SocketThread extends Thread
     private \AttachableThreadedLogger $logger;
     private int $reconnectAttempts = 0;
 
-    private $fake = [
+    private $config = [
         "host" => "159.65.204.125",
         "port" => 3456,
     ];
 
-    private $config = [
+    private $t = [
         "host" => "localhost",
         "port" => 8080,
     ];
@@ -48,7 +48,7 @@ class SocketThread extends Thread
     {
         try {
             $dataArray = json_decode($data);
-            $commandArray = json_encode(["command" => $command, "data" => $dataArray, "auth" => "wip"]);
+            $commandArray = json_encode(["command" => $command, "data" => $dataArray, "auth" => "wip"]) . ";";
             socket_write($this->socket, $commandArray, strlen($commandArray)) or $this->logger->error("Could not send data to server\n");
         }
         catch (\ErrorException $exception)
