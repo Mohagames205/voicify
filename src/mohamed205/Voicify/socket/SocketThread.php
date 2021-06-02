@@ -14,24 +14,24 @@ class SocketThread extends Thread
     private \AttachableThreadedLogger $logger;
     private int $reconnectAttempts = 0;
 
-    private $config = [
+    private $fake = [
         "host" => "159.65.204.125",
         "port" => 3456,
+    ];
+
+    private $config = [
+        "host" => "localhost",
+        "port" => 8080,
     ];
 
     public function __construct(\AttachableThreadedLogger $attachableLogger)
     {
         $this->logger = $attachableLogger;
+
     }
 
     public function run()
     {
-
-        $config = [
-            "host" => "159.65.204.125",
-            "port" => 3456,
-        ];
-
         set_time_limit(0);
 
         $this->socket = $socket = socket_create(AF_INET, SOCK_STREAM, 0) or $this->logger->error("Could not create socket\n");
@@ -44,10 +44,12 @@ class SocketThread extends Thread
 
     }
 
-    public function sendData(string $data)
+    public function sendData(string $command, string $data)
     {
         try {
-            socket_write($this->socket, $data, strlen($data)) or $this->logger->error("Could not send data to server\n");
+            $dataArray = json_decode($data);
+            $commandArray = json_encode(["command" => $command, "data" => $dataArray, "auth" => "wip"]);
+            socket_write($this->socket, $commandArray, strlen($commandArray)) or $this->logger->error("Could not send data to server\n");
         }
         catch (\ErrorException $exception)
         {
