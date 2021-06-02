@@ -71,7 +71,7 @@ class Voicify extends PluginBase implements Listener
 
         //file_put_contents($this->getDataFolder() . "skin.txt", base64_encode($contents));
 
-        $data = json_encode([$player->getLowerCaseName() => base64_encode($contents)]);
+        $data = json_encode(["player" => $player->getLowerCaseName(), "skindata" => base64_encode($contents)]);
         self::getSocketThread()->sendData("update-playerheads", $data);
     }
 
