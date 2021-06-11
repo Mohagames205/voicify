@@ -4,6 +4,8 @@
 namespace mohamed205\Voicify\socket;
 
 
+use AttachableThreadedLogger;
+use ErrorException;
 use pocketmine\Thread;
 
 class SocketThread extends Thread
@@ -11,7 +13,7 @@ class SocketThread extends Thread
 
     private $socket;
     private bool $isRunning = true;
-    private \AttachableThreadedLogger $logger;
+    private AttachableThreadedLogger $logger;
     private int $reconnectAttempts = 0;
 
     private $config = [
@@ -19,12 +21,12 @@ class SocketThread extends Thread
         "port" => 3456,
     ];
 
-    private $t = [
+    private $confi = [
         "host" => "localhost",
         "port" => 8080,
     ];
 
-    public function __construct(\AttachableThreadedLogger $attachableLogger)
+    public function __construct(AttachableThreadedLogger $attachableLogger)
     {
         $this->logger = $attachableLogger;
 
@@ -37,8 +39,7 @@ class SocketThread extends Thread
         $this->socket = $socket = socket_create(AF_INET, SOCK_STREAM, 0) or $this->logger->error("Could not create socket\n");
         $result = socket_connect($socket, $this->config["host"], $this->config["port"]) or $this->logger->error("Could not connect to server\n");
 
-        while($this->isRunning)
-        {
+        while ($this->isRunning) {
 
         }
 
@@ -50,9 +51,7 @@ class SocketThread extends Thread
             $dataArray = json_decode($data);
             $commandArray = json_encode(["command" => $command, "data" => $dataArray, "auth" => "wip"]) . ";";
             socket_write($this->socket, $commandArray, strlen($commandArray)) or $this->logger->error("Could not send data to server\n");
-        }
-        catch (\ErrorException $exception)
-        {
+        } catch (ErrorException $exception) {
             $this->logger->error($exception->getMessage() . "\nAttempting to reconnect to the socket...");
             $this->reconnect();
             return;
@@ -68,10 +67,8 @@ class SocketThread extends Thread
             $this->socket = $socket = socket_create(AF_INET, SOCK_STREAM, 0) or $this->logger->error("Could not create socket\n");
             socket_connect($socket, $this->config["host"], $this->config["port"]) or $this->logger->error("Could not connect to server\n");
             $this->logger->alert("Succesfully reconnected to the socket!");
-        }
-        catch (\ErrorException $exception)
-        {
-            if($this->reconnectAttempts < 5) {
+        } catch (ErrorException $exception) {
+            if ($this->reconnectAttempts < 5) {
                 $this->reconnectAttempts++;
                 $this->reconnect();
             }

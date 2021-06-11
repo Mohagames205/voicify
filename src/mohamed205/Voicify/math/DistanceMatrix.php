@@ -4,8 +4,6 @@
 namespace mohamed205\Voicify\math;
 
 
-use pocketmine\Player;
-
 class DistanceMatrix
 {
 
@@ -16,7 +14,7 @@ class DistanceMatrix
         $this->distances[strtolower($player)] = $distance;
     }
 
-    public function getDistance(string $player) : ?int
+    public function getDistance(string $player): ?int
     {
         return $this->distances[strtolower($player)] ?? null;
     }
@@ -31,7 +29,7 @@ class DistanceMatrix
 
     public function toString(): string
     {
-        return (string) $this;
+        return (string)$this;
     }
 
     public function __toString()
