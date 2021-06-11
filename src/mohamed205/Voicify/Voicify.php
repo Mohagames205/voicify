@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace mohamed205\Voicify;
 
-use Himbeer\LibSkin\LibSkin;
+use Exception;
 use Himbeer\LibSkin\SkinConverter;
 use mohamed205\Voicify\socket\SocketThread;
 use mohamed205\Voicify\task\SendPlayerDistanceTask;
@@ -27,36 +27,32 @@ class Voicify extends PluginBase implements Listener
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function onJoin(PlayerJoinEvent $event)
     {
         $player = $event->getPlayer();
-        $skinData = base64_encode($player->getSkin()->getSkinData());
-
-
 
         $imgResource = SkinConverter::skinDataToImage($player->getSkin()->getSkinData());
-        //$imgResource = imagecrop($imgResource, ['x' => 8, 'y' => 8, 'width' => 8, 'height' => 8]);
 
-        $base = 128;
-        $divider = 16;
+        $base = 256;
+        $divider = 32;
         $headImage = imagecreatetruecolor($base, $base);
 
         $x = 0;
         $headImageX = 0;
         $headImageY = 0;
-        while($x < $base) {
+        while ($x < $base) {
             $y = 0;
-            while($y < $base) {
-               $color = imagecolorat($imgResource, $headImageX + 8, $headImageY + 8);
-               imagesetpixel($headImage, $x, $y, $color);
-               if($y % $divider == 0 && $y !== 0) {
-                   $headImageY++;
-               }
-               $y++;
+            while ($y < $base) {
+                $color = imagecolorat($imgResource, $headImageX + 8, $headImageY + 8);
+                imagesetpixel($headImage, $x, $y, $color);
+                if ($y % $divider == 0 && $y !== 0) {
+                    $headImageY++;
+                }
+                $y++;
             }
-            if($x % $divider == 0 && $x !== 0) {
+            if ($x % $divider == 0 && $x !== 0) {
                 $headImageX++;
             }
             $x++;
@@ -70,8 +66,6 @@ class Voicify extends PluginBase implements Listener
         imagejpeg($headImage); //This will normally output the image, but because of ob_start(), it won't.
         $contents = ob_get_contents(); //Instead, output above is saved to $contents
         ob_end_clean();
-
-        //file_put_contents($this->getDataFolder() . "skin.txt", base64_encode($contents));
 
         $data = json_encode(["player" => $player->getLowerCaseName(), "skindata" => base64_encode($contents)]);
         self::getSocketThread()->sendData("update-playerheads", $data);
