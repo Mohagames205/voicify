@@ -4,8 +4,6 @@
 namespace mohamed205\Voicify\math;
 
 
-use pocketmine\Player;
-
 class Distance
 {
 
