@@ -16,12 +16,12 @@ class SocketThread extends Thread
     private AttachableThreadedLogger $logger;
     private int $reconnectAttempts = 0;
 
-    private $config = [
+    private $confi = [
         "host" => "159.65.204.125",
         "port" => 3456,
     ];
 
-    private $confi = [
+    private $config = [
         "host" => "localhost",
         "port" => 8080,
     ];

@@ -6,6 +6,7 @@ namespace mohamed205\Voicify;
 
 use Exception;
 use Himbeer\LibSkin\SkinConverter;
+use mohamed205\Voicify\socket\Connector;
 use mohamed205\Voicify\socket\SocketThread;
 use mohamed205\Voicify\task\SendPlayerDistanceTask;
 use pocketmine\event\Listener;
@@ -15,15 +16,17 @@ use pocketmine\plugin\PluginBase;
 class Voicify extends PluginBase implements Listener
 {
 
-    private static SocketThread $socketThread;
+    private static Connector $connector;
 
     public function onEnable()
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->getScheduler()->scheduleRepeatingTask(new SendPlayerDistanceTask(), 10);
 
-        self::$socketThread = $thread = new SocketThread($this->getServer()->getLogger());
+        $thread = new SocketThread($this->getServer()->getLogger());
         $thread->start();
+
+        self::$connector = new Connector($thread);
     }
 
     /**
@@ -67,18 +70,20 @@ class Voicify extends PluginBase implements Listener
         $contents = ob_get_contents(); //Instead, output above is saved to $contents
         ob_end_clean();
 
-        $data = json_encode(["player" => $player->getLowerCaseName(), "skindata" => base64_encode($contents)]);
-        self::getSocketThread()->sendData("update-playerheads", $data);
+        $data = ["player" => $player->getLowerCaseName(), "skindata" => base64_encode($contents)];
+        self::getConnector()->http('/api/playerheads/upload', $data);
+        //self::getConnector()->tcp("update-playerheads", $data);
     }
 
-    public static function getSocketThread(): SocketThread
+
+    public static function getConnector(): Connector
     {
-        return self::$socketThread;
+        return self::$connector;
     }
 
     public function onDisable()
     {
-        self::getSocketThread()->stop();
+        self::getConnector()->getSocketThread()->stop();
     }
 
 }
