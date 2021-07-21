@@ -16,12 +16,12 @@ class SocketThread extends Thread
     private AttachableThreadedLogger $logger;
     private int $reconnectAttempts = 0;
 
-    private $config = [
+    private $confi = [
         "host" => "159.65.204.125",
         "port" => 3456,
     ];
 
-    private $confi = [
+    private $config = [
         "host" => "localhost",
         "port" => 8080,
     ];
@@ -52,7 +52,6 @@ class SocketThread extends Thread
             $commandArray = json_encode(["command" => $command, "data" => $dataArray, "auth" => "wip"]) . ";";
             socket_write($this->socket, $commandArray, strlen($commandArray)) or $this->logger->error("Could not send data to server\n");
         } catch (ErrorException $exception) {
-            $this->logger->error($exception->getMessage() . "\nAttempting to reconnect to the socket...");
             $this->reconnect();
             return;
         }
@@ -69,6 +68,7 @@ class SocketThread extends Thread
             $this->logger->alert("Succesfully reconnected to the socket!");
         } catch (ErrorException $exception) {
             if ($this->reconnectAttempts < 5) {
+                $this->logger->error($exception->getMessage() . "\nAttempting to reconnect to the socket...");
                 $this->reconnectAttempts++;
                 $this->reconnect();
             }

@@ -26,9 +26,7 @@ class SendPlayerDistanceTask extends Task
             $distances[strtolower($player->getName())] = $distanceMatrix->getDistances();
         }
 
-        $distances = json_encode($distances);
-
-        Voicify::getSocketThread()->sendData("update-coordinates", $distances);
+        Voicify::getConnector()->tcp("update-coordinates", $distances);
     }
 
 }
