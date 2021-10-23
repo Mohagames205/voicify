@@ -6,7 +6,7 @@ namespace mohamed205\Voicify\socket;
 
 use AttachableThreadedLogger;
 use ErrorException;
-use pocketmine\Thread;
+use pocketmine\thread\Thread;
 
 class SocketThread extends Thread
 {
@@ -32,8 +32,9 @@ class SocketThread extends Thread
 
     }
 
-    public function run()
+    public function onRun(): void
     {
+        var_dump("is still running");
         set_time_limit(0);
 
         $this->socket = $socket = socket_create(AF_INET, SOCK_STREAM, 0) or $this->logger->error("Could not create socket\n");
@@ -47,6 +48,7 @@ class SocketThread extends Thread
 
     public function sendData(string $command, string $data)
     {
+        if(!$this->isRunning) return;
         try {
             $dataArray = json_decode($data);
             $commandArray = json_encode(["command" => $command, "data" => $dataArray, "auth" => "wip"]) . ";";
@@ -71,14 +73,18 @@ class SocketThread extends Thread
                 $this->logger->error($exception->getMessage() . "\nAttempting to reconnect to the socket...");
                 $this->reconnectAttempts++;
                 $this->reconnect();
+            } else {
+                if($this->isRunning) $this->stop();
             }
         }
     }
 
     public function stop()
     {
+        var_dump("stopping");
         socket_close($this->socket);
         $this->isRunning = false;
+        $this->quit();
     }
 
 

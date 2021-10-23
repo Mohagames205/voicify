@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace mohamed205\Voicify;
 
 use Exception;
-use Himbeer\LibSkin\SkinConverter;
+use mohamed205\Voicify\libs\LibSkin\SkinConverter;
 use mohamed205\Voicify\socket\Connector;
 use mohamed205\Voicify\socket\SocketThread;
 use mohamed205\Voicify\task\SendPlayerDistanceTask;
+use pocketmine\entity\Skin;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\plugin\PluginBase;
@@ -18,7 +19,7 @@ class Voicify extends PluginBase implements Listener
 
     private static Connector $connector;
 
-    public function onEnable()
+    public function onEnable(): void
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->getScheduler()->scheduleRepeatingTask(new SendPlayerDistanceTask(), 10);
@@ -32,7 +33,7 @@ class Voicify extends PluginBase implements Listener
     /**
      * @throws Exception
      */
-    public function onJoin(PlayerJoinEvent $event)
+    public function onJoin(PlayerJoinEvent $event): void
     {
         $player = $event->getPlayer();
 
@@ -70,7 +71,7 @@ class Voicify extends PluginBase implements Listener
         $contents = ob_get_contents(); //Instead, output above is saved to $contents
         ob_end_clean();
 
-        $data = ["player" => $player->getLowerCaseName(), "skindata" => base64_encode($contents)];
+        $data = ["player" => strtolower($player->getName()), "skindata" => base64_encode($contents)];
         self::getConnector()->http('/api/playerheads/upload', $data);
         //self::getConnector()->tcp("update-playerheads", $data);
     }
@@ -81,7 +82,7 @@ class Voicify extends PluginBase implements Listener
         return self::$connector;
     }
 
-    public function onDisable()
+    public function onDisable(): void
     {
         self::getConnector()->getSocketThread()->stop();
     }
