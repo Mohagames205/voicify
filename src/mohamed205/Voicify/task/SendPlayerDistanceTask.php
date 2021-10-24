@@ -12,13 +12,13 @@ use pocketmine\Server;
 class SendPlayerDistanceTask extends Task
 {
 
-    public function onRun(int $currentTick)
+    public function onRun(): void
     {
         $distances = [];
 
         foreach (Server::getInstance()->getOnlinePlayers() as $player) {
             $distanceMatrix = new DistanceMatrix();
-            foreach ($player->getLevel()->getPlayers() as $levelPlayer) {
+            foreach ($player->getWorld()->getPlayers() as $levelPlayer) {
                 if ($levelPlayer !== $player) {
                     $distanceMatrix->add($levelPlayer->getName(), $player->distance($levelPlayer));
                 }

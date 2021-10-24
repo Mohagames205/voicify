@@ -41,7 +41,7 @@ class Connector
                 $this->endpoint = $command;
             }
 
-            public function onRun()
+            public function onRun(): void
             {
                 $data = urlencode($this->data);
                 $stringedData = "data=$data&roomId=mo&auth=wip";
