@@ -20,7 +20,11 @@ class SendPlayerDistanceTask extends Task
             $distanceMatrix = new DistanceMatrix();
             foreach ($player->getWorld()->getPlayers() as $levelPlayer) {
                 if ($levelPlayer !== $player) {
-                    $distanceMatrix->add($levelPlayer->getName(), $player->distance($levelPlayer));
+                    $distance = $player->getLocation()->distance($levelPlayer->getLocation());
+                    if($distance < 40)
+                    {
+                        $distanceMatrix->add($levelPlayer->getName(), $distance);
+                    }
                 }
             }
             $distances[strtolower($player->getName())] = $distanceMatrix->getDistances();
