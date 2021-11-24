@@ -3,4 +3,13 @@ name: Voicify
 version: 0.0.1
 main: mohamed205\Voicify\Voicify
 api: 4.0.0
+
+commands:
+  voicelink:
+    permission: 'voice.link'
+
+permissions:
+  voice.link:
+    description: 'Allows the user to link their Discord account to their Voxum account.'
+    default: true
 ...
