@@ -16,12 +16,12 @@ class SocketThread extends Thread
     private AttachableThreadedLogger $logger;
     private int $reconnectAttempts = 0;
 
-    private $confi = [
+    private $config = [
         "host" => "159.65.204.125",
         "port" => 3456,
     ];
 
-    private $config = [
+    private $confi = [
         "host" => "localhost",
         "port" => 8080,
     ];
@@ -34,7 +34,6 @@ class SocketThread extends Thread
 
     public function onRun(): void
     {
-        var_dump("is still running");
         set_time_limit(0);
 
         $this->socket = $socket = socket_create(AF_INET, SOCK_STREAM, 0) or $this->logger->error("Could not create socket\n");
@@ -81,7 +80,6 @@ class SocketThread extends Thread
 
     public function stop()
     {
-        var_dump("stopping");
         socket_close($this->socket);
         $this->isRunning = false;
         $this->quit();
