@@ -45,7 +45,7 @@ class Connector
             {
                 $data = urlencode($this->data);
                 $stringedData = "data=$data&roomId=mo&auth=wip";
-                Internet::postURL("localhost" . $this->endpoint, $stringedData);
+                Internet::postURL("https://voxum.mootje.be" . $this->endpoint, $stringedData);
             }
         });
     }
