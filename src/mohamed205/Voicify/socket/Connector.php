@@ -4,6 +4,7 @@
 namespace mohamed205\Voicify\socket;
 
 
+use mohamed205\Voicify\Settings;
 use mohamed205\Voicify\Voicify;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
@@ -12,12 +13,8 @@ use pocketmine\utils\Internet;
 class Connector
 {
 
-    private SocketThread $socketThread;
 
-    public function __construct(SocketThread $socketThread)
-    {
-        $this->socketThread = $socketThread;
-    }
+    public function __construct(private SocketThread $socketThread, private Settings $settings){}
 
     public function tcp(string $command, array $data)
     {
@@ -30,22 +27,17 @@ class Connector
     {
         $data = json_encode($data);
 
-        Server::getInstance()->getAsyncPool()->submitTask(new class($endpoint, $data) extends AsyncTask{
+        Server::getInstance()->getAsyncPool()->submitTask(new class($endpoint, $data, $this->settings) extends AsyncTask{
 
-            private string $data;
-            private string $endpoint;
-
-            public function __construct(string $command, string $data)
-            {
-                $this->data = $data;
-                $this->endpoint = $command;
-            }
+            public function __construct(private string $endpoint,
+                                        private string $data,
+                                        private Settings $settings){}
 
             public function onRun(): void
             {
                 $data = urlencode($this->data);
                 $stringedData = "data=$data&roomId=mo&auth=wip";
-                Internet::postURL("https://voxum.mootje.be" . $this->endpoint, $stringedData);
+                Internet::postURL($this->settings->getDomainEndpoint() . $this->endpoint, $stringedData);
             }
         });
     }

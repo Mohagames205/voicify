@@ -26,15 +26,25 @@ class Voicify extends PluginBase implements Listener
 
     private static Connector $connector;
 
+    private Settings $settings;
+
     public function onEnable(): void
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->getScheduler()->scheduleRepeatingTask(new SendPlayerDistanceTask(), 10);
 
-        $thread = new SocketThread($this->getServer()->getLogger());
+        $config = $this->getConfig();
+        $environment = $config->get('mode');
+        $settings = $config->get($environment ?? 'prod');
+
+        $this->settings = $settingsObj = new Settings($settings['domain_endpoint'], $settings['ip'], $settings['port'], $settings['socket_password'], $settings['api_password']);
+
+        $thread = new SocketThread($this->getServer()->getLogger(), $settingsObj);
         $thread->start();
 
-        self::$connector = new Connector($thread);
+
+
+        self::$connector = new Connector($thread, $settingsObj);
     }
 
     public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool
@@ -45,17 +55,22 @@ class Voicify extends PluginBase implements Listener
                 $sender->sendMessage(TextFormat::RED . "Please run this command in-game.");
                 return true;
             }
-            $this->getServer()->getAsyncPool()->submitTask(new class ($sender->getName()) extends AsyncTask {
-                public function __construct(public string $player) {}
+            $this->getServer()->getAsyncPool()->submitTask(new class ($sender->getName(), $this->settings) extends AsyncTask {
+                public function __construct(public string $player, private Settings $settings) {}
 
                 public function onRun(): void{
-                    $response = Internet::getURL("localhost/askcode?username={$this->player}&auth=gelebananenzijnkrom");
+                    $response = Internet::getURL("{$this->settings->getDomainEndpoint()}/askcode?username={$this->player}&auth={$this->settings->getApiPassword()}");
                     $this->setResult(json_decode($response->getBody(), true)["code"]);
                 }
 
                 public function onCompletion(): void{
                     $player = Server::getInstance()->getPlayerExact($this->player);
                     if($player !== null) {
+                        if($this->getResult() == null)
+                        {
+                            $player->sendMessage(TextFormat::RED . "U moet nog een verificatiecode genereren op de voxum website.");
+                            return;
+                        }
                         $player->sendMessage(TextFormat::GREEN . "Uw verificatiecode is " . $this->getResult());
                     }
                 }

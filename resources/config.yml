@@ -1,0 +1,15 @@
+dev:
+  domain_endpoint: localhost
+  ip: localhost
+  port: 8080
+  socket_password: gelebananenzijnkrom
+  api_password: gelebananenzijnkrom
+
+prod:
+  domain_endpoint: https://voxum.mootje.be
+  ip:
+  port:
+  socket_password:
+  api_password:
+
+mode: dev
