@@ -6,6 +6,7 @@ namespace mohamed205\Voicify;
 
 use Exception;
 use mohamed205\Voicify\libs\LibSkin\SkinConverter;
+use mohamed205\Voicify\math\VectorHelper;
 use mohamed205\Voicify\socket\Connector;
 use mohamed205\Voicify\socket\SocketThread;
 use mohamed205\Voicify\task\SendPlayerDistanceTask;
@@ -17,6 +18,8 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\scheduler\ClosureTask;
+use pocketmine\scheduler\Task;
 use pocketmine\Server;
 use pocketmine\utils\Internet;
 use pocketmine\utils\TextFormat;
@@ -33,6 +36,17 @@ class Voicify extends PluginBase implements Listener
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->getScheduler()->scheduleRepeatingTask(new SendPlayerDistanceTask(), 10);
 
+        $this->getScheduler()->scheduleRepeatingTask(new ClosureTask(function (): void {
+            $players = $this->getServer()->getOnlinePlayers();
+            foreach ($players as $player) {
+                foreach ($players as $onlinePlayer){
+                    $angle = VectorHelper::getAngularDifference($player->getDirectionVector(), $onlinePlayer->getDirectionVector());
+                    var_dump("{$player->getName()} {$onlinePlayer->getName()} {$angle}");
+                }
+            }
+
+        }), 60);
+
         $config = $this->getConfig();
         $environment = $config->get('mode');
         $settings = $config->get($environment ?? 'prod');
@@ -41,8 +55,6 @@ class Voicify extends PluginBase implements Listener
 
         $thread = new SocketThread($this->getServer()->getLogger(), $settingsObj);
         $thread->start();
-
-
 
         self::$connector = new Connector($thread, $settingsObj);
     }
@@ -59,7 +71,7 @@ class Voicify extends PluginBase implements Listener
                 public function __construct(public string $player, private Settings $settings) {}
 
                 public function onRun(): void{
-                    $response = Internet::getURL("{$this->settings->getDomainEndpoint()}/askcode?username={$this->player}&auth={$this->settings->getApiPassword()}");
+                    $response = Internet::getURL("{$this->settings->getDomainEndpoint()}/askcode?username={$this->player}&auth={$this->settings->getApiPassword()}", err: $error);
                     $this->setResult(json_decode($response->getBody(), true)["code"]);
                 }
 
