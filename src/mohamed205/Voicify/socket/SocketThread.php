@@ -34,10 +34,12 @@ class SocketThread extends Thread
     public function sendData(string $command, string $data)
     {
         if(!$this->isRunning) return;
+        $this->logger->debug("Sending data to server $command");
         try {
             $dataArray = json_decode($data);
             $commandArray = json_encode(["command" => $command, "data" => $dataArray, "auth" => "wip"]) . ";";
-            socket_write($this->socket, $commandArray, strlen($commandArray)) or $this->logger->error("Could not send data to server\n");
+            $bytes = socket_write($this->socket, $commandArray, strlen($commandArray)) or $this->logger->error("Could not send data to server\n");
+            $this->logger->debug("$bytes data sent to server, $data");
         } catch (ErrorException $exception) {
             $this->reconnect();
             return;
