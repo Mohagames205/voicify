@@ -1,8 +1,9 @@
 ---
 name: Voicify
 version: 0.0.1
-main: mohamed205\Voicify\Voicify
+main: mohamed205\voxum\Voicify
 api: 4.0.0
+src-namespace-prefix: Mohamed205\voxum
 
 commands:
   voicelink:
